@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Spring-boot-demo-Copy.iml" filepath="$PROJECT_DIR$/.idea/Spring-boot-demo-Copy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Spring-boot-demo-55b3ad278092198acc6cfef0f029e9012f880e60/spring-boot-jwt/spring-boot-jwt.iml" filepath="$PROJECT_DIR$/Spring-boot-demo-55b3ad278092198acc6cfef0f029e9012f880e60/spring-boot-jwt/spring-boot-jwt.iml" />
+    </modules>
+  </component>
+</project>
