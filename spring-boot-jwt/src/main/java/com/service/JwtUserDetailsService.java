@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.dto.UserDto;
 import com.entity.User;
 import com.repository.UserRepository;
+import com.util.VarList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,11 +32,20 @@ public class JwtUserDetailsService implements UserDetailsService {
                 new ArrayList<>());
     }
 
-    public User save(UserDto user) {
-        User newUser = new User();
-        newUser.setEmail(user.getEmail());
-        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-        return userRepo.save(newUser);
+    public String save(UserDto user) {
+
+        if(userRepo.existsByEmail(user.getEmail())){
+            return VarList.RSP_DUPLICATED;
+        }
+        else {
+            User newUser = new User();
+            newUser.setEmail(user.getEmail());
+            newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+            newUser.setFirstName(user.getFirstName());
+            newUser.setLastName(user.getLastName());
+            userRepo.save(newUser);
+            return VarList.RSP_SUCCESS;
+        }
     }
 
 }

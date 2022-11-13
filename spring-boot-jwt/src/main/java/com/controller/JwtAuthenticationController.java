@@ -1,8 +1,11 @@
 package com.controller;
 
+import com.dto.ResponseDto;
 import com.dto.UserDto;
 import com.service.JwtUserDetailsService;
+import com.util.VarList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,7 +35,10 @@ public class JwtAuthenticationController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    @Autowired
+    private ResponseDto responseDto;
+
+    @RequestMapping(value = "/api/v1/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
         authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
@@ -44,9 +50,41 @@ public class JwtAuthenticationController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/v1/signUp", method = RequestMethod.POST)
     public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws Exception {
-        return ResponseEntity.ok(userDetailsService.save(user));
+        try{
+            String res = userDetailsService.save(user);
+            if(res.equals("00")){
+                responseDto.setCode(VarList.RSP_SUCCESS);
+                responseDto.setMessage("Success");
+                responseDto.setContent(null);
+                return new ResponseEntity(responseDto, HttpStatus.ACCEPTED);
+            }
+            else if(res.equals("06")){
+                responseDto.setCode(VarList.RSP_BAD_REQUEST);
+                responseDto.setMessage("Bad request");
+                responseDto.setContent(null);
+                return new ResponseEntity(responseDto, HttpStatus.BAD_REQUEST);
+            }
+            else if(res.equals("04")){
+                responseDto.setCode(VarList.RSP_DUPLICATED);
+                responseDto.setMessage("User Already Exists");
+                responseDto.setContent(null);
+                return new ResponseEntity(responseDto, HttpStatus.BAD_REQUEST);
+            }
+            else{
+                responseDto.setCode(VarList.RSP_FAIL);
+                responseDto.setMessage("Error");
+                responseDto.setContent(null);
+                return new ResponseEntity(responseDto, HttpStatus.BAD_REQUEST);
+            }
+        }
+        catch (Exception e){
+            responseDto.setCode(VarList.RSP_FAIL);
+            responseDto.setMessage(e.getMessage());
+            responseDto.setContent(null);
+            return new ResponseEntity(responseDto, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private void authenticate(String username, String password) throws Exception {
