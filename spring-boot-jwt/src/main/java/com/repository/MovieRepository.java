@@ -13,4 +13,6 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     @Modifying
     @Query(value="DELETE FROM Movie WHERE imdb = ?1", nativeQuery = true)
     void deleteMovie(String Imdb);
+
+    boolean existsByImdb(String Imdb);
 }

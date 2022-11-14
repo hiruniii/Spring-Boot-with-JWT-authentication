@@ -3,6 +3,7 @@ package com.service;
 import com.dto.MovieDto;
 import com.entity.Movie;
 import com.repository.MovieRepository;
+import com.util.VarList;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,14 @@ public class MovieService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public MovieDto addMovie(MovieDto movieDTO){
-        movieRepo.save(modelMapper.map(movieDTO, Movie.class));
-        return movieDTO;
+    public String addMovie(MovieDto movieDTO){
+        if(movieRepo.existsByImdb(movieDTO.getImdb())){
+            return VarList.RSP_DUPLICATED;
+        }
+        else{
+            movieRepo.save(modelMapper.map(movieDTO, Movie.class));
+            return VarList.RSP_SUCCESS;
+        }
     }
 
     public List<MovieDto> getAllMovies(){
@@ -36,13 +42,23 @@ public class MovieService {
         return modelMapper.map(movie, MovieDto.class);
     }
 
-    public MovieDto updateMovie(MovieDto movieDTO){
-        movieRepo.save(modelMapper.map(movieDTO, Movie.class));
-        return movieDTO;
+    public String updateMovie(MovieDto movieDTO){
+        if(!movieRepo.existsByImdb(movieDTO.getImdb())){
+            return VarList.RSP_NO_DATA_FOUND;
+        }
+        else{
+            movieRepo.save(modelMapper.map(movieDTO, Movie.class));
+            return VarList.RSP_SUCCESS;
+        }
     }
 
-    public void deleteMovie(String Imdb){
-        movieRepo.deleteMovie(Imdb);
-        return;
+    public String deleteMovie(String Imdb){
+        if(!movieRepo.existsByImdb(Imdb)){
+            return VarList.RSP_NO_DATA_FOUND;
+        }
+        else{
+            movieRepo.deleteMovie(Imdb);
+            return VarList.RSP_SUCCESS;
+        }
     }
 }
